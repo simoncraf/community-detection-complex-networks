@@ -2,12 +2,16 @@ import networkx as nx
 import igraph as ig
 import re
 import matplotlib.pyplot as plt
+import matplotlib.cm as cm
+import numpy as np
 
 from pathlib import Path
 from sklearn.metrics.cluster import contingency_matrix, normalized_mutual_info_score, adjusted_mutual_info_score
 
 NETWORKS_FOLDER = Path("networks")
 CLUSTERING_ALGORITHM = "infomap"
+MAX_NETWORK = nx.read_pajek(NETWORKS_FOLDER / "synthetic_network_N_300_blocks_5_prr_1.00_prs_0.02.net")
+POSITIONS = nx.kamada_kawai_layout(MAX_NETWORK)
 results = []
 
 def apply_algorithms(G, algorithm):
@@ -117,7 +121,7 @@ def _plot_metrics(sorted_results, prr, algorithm):
     
 def _plot_communities(sorted_results, algorithm):
     fig, axes = plt.subplots(1, 3, figsize=(15, 5))
-    target_prrs = [0.02, 0.16, 1.00]
+    target_prrs = [0.06, 0.16, 1.00]
     
     for ax, target_prr in zip(axes, target_prrs):
         for result in sorted_results:
@@ -126,8 +130,8 @@ def _plot_communities(sorted_results, algorithm):
                 communities = result['clusters'].membership
                 unique_communities = np.unique(communities)
                 cmap = cm.get_cmap('viridis', len(unique_communities))
-                nx.draw_networkx_nodes(G, positions, node_color=communities, node_size=50, ax=ax, cmap=cmap)
-                nx.draw_networkx_edges(G, positions, ax=ax, alpha=0.3)
+                nx.draw_networkx_nodes(G, POSITIONS, node_color=communities, node_size=50, ax=ax, cmap=cmap)
+                nx.draw_networkx_edges(G, POSITIONS, ax=ax, alpha=0.3)
                 ax.set_title(f'PRR = {target_prr}')
                 ax.axis('off')
     
