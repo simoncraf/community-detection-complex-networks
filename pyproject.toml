@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "community-detection-complex-networks"
+version = "0.1.0"
+description = "Analysis of community structures in complex networks using SBM with Infomap, Louvain, and Leiden algorithms."
+authors = ["Simone Gigante <simonegigante17@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+networkx = "^3.3"
+python-igraph = "^0.11.4"
+infomap = "^2.7.1"
+
+[build-system]
+requires = ["poetry-core>=1.9.0"]
+build-backend = "poetry.core.masonry.api"
+
