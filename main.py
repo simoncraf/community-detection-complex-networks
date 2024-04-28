@@ -64,6 +64,7 @@ def plot_results(results, algorithm):
     prr = [result["prr"] for result in sorted_results]
     _plot_modularities_and_n_clusters(sorted_results, prr, algorithm)
     _plot_metrics(sorted_results, prr, algorithm)
+    _plot_communities(sorted_results, algorithm)
 
 def _plot_modularities_and_n_clusters(sorted_results, prr, algorithm):
     modularities = [result["modularity"] for result in sorted_results]
@@ -111,6 +112,26 @@ def _plot_metrics(sorted_results, prr, algorithm):
     plt.ylabel("AMI")
 
     plt.suptitle(f"Results for the {algorithm} algorithm")
+    plt.tight_layout()
+    plt.show()
+    
+def _plot_communities(sorted_results, algorithm):
+    fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+    target_prrs = [0.02, 0.16, 1.00]
+    
+    for ax, target_prr in zip(axes, target_prrs):
+        for result in sorted_results:
+            if result['prr'] == target_prr:
+                G = nx.read_pajek(str(result['filename']))
+                communities = result['clusters'].membership
+                unique_communities = np.unique(communities)
+                cmap = cm.get_cmap('viridis', len(unique_communities))
+                nx.draw_networkx_nodes(G, positions, node_color=communities, node_size=50, ax=ax, cmap=cmap)
+                nx.draw_networkx_edges(G, positions, ax=ax, alpha=0.3)
+                ax.set_title(f'PRR = {target_prr}')
+                ax.axis('off')
+    
+    plt.suptitle(f"Community Structures for {algorithm} algorithm")
     plt.tight_layout()
     plt.show()
 
